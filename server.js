@@ -65,6 +65,24 @@ app.post("/home", async (req, res) => {
   }
 });
 
+// UPDATE ROUTE
+app.put("/home/:id", async (req, res) => {
+  try {
+    res.json(await Haunted.findByIdAndUpdate(req.params.id, req.body));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+// DELETE ROUTE
+app.delete("/home/:id", async (req, res) => {
+  try {
+    res.json(await Haunted.findByIdAndRemove(req.params.id));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 ///////////////////////////////
 // LISTENER
 ////////////////////////////////
