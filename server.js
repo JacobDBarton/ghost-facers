@@ -17,8 +17,8 @@ mongoose.connect(MONGODB_URL);
 
 // Connection Events
 mongoose.connection
-  .on("open", () => console.log("Your are connected to mongoose"))
-  .on("close", () => console.log("Your are disconnected from mongoose"))
+  .on("open", () => console.log("You are connected to mongoose"))
+  .on("close", () => console.log("You are disconnected from mongoose"))
   .on("error", (error) => console.log(error));
 
 ///////////////////////////////
@@ -27,6 +27,9 @@ mongoose.connection
 const HauntedLocSchema = new mongoose.Schema({
   image: String,
   description: String,
+  city: String,
+  state: String,
+  location: String,
   hauntedRating: String,
 });
 
@@ -48,7 +51,7 @@ app.get("/", (req, res) => {
 });
 
 // INDEX ROUTE
-app.get("/home", async (req, res) => {
+app.get("/ShowPage", async (req, res) => {
   try {
     res.json(await Haunted.find({}));
   } catch (error) {
@@ -57,7 +60,7 @@ app.get("/home", async (req, res) => {
 });
 
 // CREATE ROUTE
-app.post("/home", async (req, res) => {
+app.post("/CreateListPage", async (req, res) => {
   try {
     res.json(await Haunted.create(req.body));
   } catch (error) {
@@ -66,7 +69,7 @@ app.post("/home", async (req, res) => {
 });
 
 // UPDATE ROUTE
-app.put("/home/:id", async (req, res) => {
+app.put("/EditListPage/:id", async (req, res) => {
   try {
     res.json(await Haunted.findByIdAndUpdate(req.params.id, req.body));
   } catch (error) {
@@ -75,7 +78,7 @@ app.put("/home/:id", async (req, res) => {
 });
 
 // DELETE ROUTE
-app.delete("/home/:id", async (req, res) => {
+app.delete("/ShowPage/:id", async (req, res) => {
   try {
     res.json(await Haunted.findByIdAndRemove(req.params.id));
   } catch (error) {
