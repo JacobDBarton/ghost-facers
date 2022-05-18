@@ -13,6 +13,7 @@ const morgan = require("morgan");
 ///////////////////////////////
 // DATABASE CONNECTION
 ////////////////////////////////
+
 mongoose.connect(MONGODB_URL);
 
 // Connection Events
@@ -24,7 +25,8 @@ mongoose.connection
 ///////////////////////////////
 // MODELS
 ////////////////////////////////
-const HauntedLocSchema = new mongoose.Schema({
+
+const locationsSchema = new mongoose.Schema({
   image: String,
   description: String,
   city: String,
@@ -33,11 +35,19 @@ const HauntedLocSchema = new mongoose.Schema({
   hauntedRating: String,
 });
 
-const Haunted = mongoose.model("Haunted", HauntedLocSchema);
+const Locations = mongoose.model("locations", locationsSchema);
+
+const reviewsSchema = new mongoose.Schema({
+  comment: String,
+  hauntedRating: String,
+})
+
+const Reviews = mongoose.model("reviews", reviewsSchema)
 
 ///////////////////////////////
 // MiddleWare
 ////////////////////////////////
+
 app.use(cors()); // to prevent cors errors, open access to all origins
 app.use(morgan("dev")); // logging
 app.use(express.json()); // parse json bodies
@@ -46,45 +56,32 @@ app.use(express.json()); // parse json bodies
 // ROUTES
 ////////////////////////////////
 
-app.get("/", (req, res) => {
-  res.send("Hi GIGI");
-});
-
 // INDEX ROUTE
-app.get("/ShowPage", async (req, res) => {
+// for the carousel
+app.get("/locations/featured", async (req, res) => {
   try {
-    res.json(await Haunted.find({}));
+    res.json(await Locations.find({ image: { $exists: true } }));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+// for the search bar
+app.get("/locations/all", async (req, res) => {
+  try {
+    res.json(await Locations.find());
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+// for user reviews and ratings
+app.get("/reviews", async (req, res) => {
+  try {
+    res.json(await Reviews.find());
   } catch (error) {
     res.status(400).json(error);
   }
 });
 
-// CREATE ROUTE
-app.post("/CreateListPage", async (req, res) => {
-  try {
-    res.json(await Haunted.create(req.body));
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
-
-// UPDATE ROUTE
-app.put("/EditListPage/:id", async (req, res) => {
-  try {
-    res.json(await Haunted.findByIdAndUpdate(req.params.id, req.body));
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
-
-// DELETE ROUTE
-app.delete("/ShowPage/:id", async (req, res) => {
-  try {
-    res.json(await Haunted.findByIdAndRemove(req.params.id));
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
 
 ///////////////////////////////
 // LISTENER
