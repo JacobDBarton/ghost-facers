@@ -13,6 +13,7 @@ const morgan = require("morgan");
 ///////////////////////////////
 // DATABASE CONNECTION
 ////////////////////////////////
+
 mongoose.connect(MONGODB_URL);
 
 // Connection Events
@@ -24,6 +25,7 @@ mongoose.connection
 ///////////////////////////////
 // MODELS
 ////////////////////////////////
+
 const locationsSchema = new mongoose.Schema({
   image: String,
   description: String,
@@ -35,9 +37,17 @@ const locationsSchema = new mongoose.Schema({
 
 const Locations = mongoose.model("locations", locationsSchema);
 
+const reviewsSchema = new mongoose.Schema({
+  comment: String,
+  hauntedRating: String,
+})
+
+const Reviews = mongoose.model("reviews", reviewsSchema)
+
 ///////////////////////////////
 // MiddleWare
 ////////////////////////////////
+
 app.use(cors()); // to prevent cors errors, open access to all origins
 app.use(morgan("dev")); // logging
 app.use(express.json()); // parse json bodies
@@ -46,11 +56,8 @@ app.use(express.json()); // parse json bodies
 // ROUTES
 ////////////////////////////////
 
-// app.get("/", (req, res) => {
-//   res.send("Hi GIGI");
-// });
-
 // INDEX ROUTE
+// for the carousel
 app.get("/locations/featured", async (req, res) => {
   try {
     res.json(await Locations.find({ image: { $exists: true } }));
@@ -58,7 +65,7 @@ app.get("/locations/featured", async (req, res) => {
     res.status(400).json(error);
   }
 });
-
+// for the search bar
 app.get("/locations/all", async (req, res) => {
   try {
     res.json(await Locations.find());
@@ -66,6 +73,15 @@ app.get("/locations/all", async (req, res) => {
     res.status(400).json(error);
   }
 });
+// for user reviews and ratings
+app.get("/reviews", async (req, res) => {
+  try {
+    res.json(await Reviews.find());
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 
 ///////////////////////////////
 // LISTENER
