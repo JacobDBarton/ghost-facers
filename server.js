@@ -40,9 +40,10 @@ const Locations = mongoose.model("locations", locationsSchema);
 const reviewsSchema = new mongoose.Schema({
   comment: String,
   hauntedRating: String,
-})
+  location: { type: mongoose.Schema.Types.ObjectId, ref: "locations" },
+});
 
-const Reviews = mongoose.model("reviews", reviewsSchema)
+const Reviews = mongoose.model("reviews", reviewsSchema);
 
 ///////////////////////////////
 // MiddleWare
@@ -65,6 +66,16 @@ app.get("/locations/featured", async (req, res) => {
     res.status(400).json(error);
   }
 });
+
+// for a single location
+app.get("/locations/:id", async (req, res) => {
+  try {
+    res.json(await Locations.findById(req.params.id));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 // for the search bar
 app.get("/locations/all", async (req, res) => {
   try {
@@ -76,12 +87,11 @@ app.get("/locations/all", async (req, res) => {
 // for user reviews and ratings
 app.get("/reviews", async (req, res) => {
   try {
-    res.json(await Reviews.find());
+    res.json(await Reviews.find().populate("location"));
   } catch (error) {
     res.status(400).json(error);
   }
 });
-
 
 ///////////////////////////////
 // LISTENER
