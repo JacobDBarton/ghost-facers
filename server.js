@@ -101,7 +101,7 @@ app.get("/locations/:id", async (req, res) => {
 // for user reviews and ratings
 app.get("/reviews/:locationId", async (req, res) => {
   try {
-    res.json(await Reviews.find({ location: req.params.locationId }));
+    res.json(await Reviews.findOne({ location: req.params.locationId }));
   } catch (error) {
     res.status(400).json(error);
   }
@@ -115,6 +115,7 @@ app.post("/reviews/:locationId", async (req, res) => {
       hauntedRating: req.body.hauntedRating,
       location: req.params.locationId, // assign the _id from the location
     });
+    // review update is successful
     res.status(200).send("ok");
   } catch (error) {
     res.status(400).json(error);
