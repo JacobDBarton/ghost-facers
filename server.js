@@ -39,7 +39,7 @@ const Locations = mongoose.model("locations", locationsSchema);
 
 const reviewsSchema = new mongoose.Schema({
   comment: String,
-  hauntedRating: String,
+  hauntedRating: Number,
   location: { type: mongoose.Schema.Types.ObjectId, ref: "locations" },
 });
 
@@ -79,7 +79,6 @@ app.get("/locations/all", async (req, res) => {
 // for the search bar
 app.get("/locations/search", async (req, res) => {
   try {
-    console.log("req.query.query", req.query.query);
     res.json(
       await Locations.find({
         location: { $regex: req.query.query, $options: "i" },
@@ -100,9 +99,23 @@ app.get("/locations/:id", async (req, res) => {
 });
 
 // for user reviews and ratings
-app.get("/reviews", async (req, res) => {
+app.get("/reviews/:locationId", async (req, res) => {
   try {
-    res.json(await Reviews.find().populate("location"));
+    res.json(await Reviews.find({ location: req.params.locationId }));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+// for user reviews and ratings
+app.post("/reviews/:locationId", async (req, res) => {
+  try {
+    await Reviews.updateOne({
+      comment: req.body.comment,
+      hauntedRating: req.body.hauntedRating,
+      location: req.params.locationId, // assign the _id from the location
+    });
+    res.status(200).send("ok");
   } catch (error) {
     res.status(400).json(error);
   }
