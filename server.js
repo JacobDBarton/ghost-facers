@@ -110,11 +110,19 @@ app.get("/reviews/:locationId", async (req, res) => {
 // for user reviews and ratings
 app.post("/reviews/:locationId", async (req, res) => {
   try {
-    await Reviews.updateOne({
-      comment: req.body.comment,
-      hauntedRating: req.body.hauntedRating,
-      location: req.params.locationId, // assign the _id from the location
-    });
+    await Reviews.updateOne(
+      {
+        location: req.params.locationId, // assign the _id from the location
+      },
+      {
+        comment: req.body.comment,
+        hauntedRating: req.body.hauntedRating,
+        location: req.params.locationId, // assign the _id from the location
+      },
+      {
+        upsert: true,
+      }
+    );
     // review update is successful
     res.status(200).send("ok");
   } catch (error) {
