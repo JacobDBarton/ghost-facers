@@ -67,6 +67,29 @@ app.get("/locations/featured", async (req, res) => {
   }
 });
 
+// for the search bar
+app.get("/locations/all", async (req, res) => {
+  try {
+    res.json(await Locations.find());
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+// for the search bar
+app.get("/locations/search", async (req, res) => {
+  try {
+    console.log("req.query.query", req.query.query);
+    res.json(
+      await Locations.find({
+        location: { $regex: req.query.query, $options: "i" },
+      }).limit(20)
+    );
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 // for a single location
 app.get("/locations/:id", async (req, res) => {
   try {
@@ -76,14 +99,6 @@ app.get("/locations/:id", async (req, res) => {
   }
 });
 
-// for the search bar
-app.get("/locations/all", async (req, res) => {
-  try {
-    res.json(await Locations.find());
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
 // for user reviews and ratings
 app.get("/reviews", async (req, res) => {
   try {
