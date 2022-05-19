@@ -49,9 +49,9 @@ const Reviews = mongoose.model("reviews", reviewsSchema);
 // MiddleWare
 ////////////////////////////////
 
-app.use(cors()); // to prevent cors errors, open access to all origins
-app.use(morgan("dev")); // logging
-app.use(express.json()); // parse json bodies
+app.use(cors());
+app.use(morgan("dev"));
+app.use(express.json());
 
 ///////////////////////////////
 // ROUTES
@@ -68,20 +68,11 @@ app.get("/locations/featured", async (req, res) => {
 });
 
 // for the search bar
-app.get("/locations/all", async (req, res) => {
-  try {
-    res.json(await Locations.find());
-  } catch (error) {
-    res.status(400).json(error);
-  }
-});
-
-// for the search bar
 app.get("/locations/search", async (req, res) => {
   try {
     res.json(
       await Locations.find({
-        location: { $regex: req.query.query, $options: "i" },
+        city: { $regex: req.query.query, $options: "i" },
       }).limit(20)
     );
   } catch (error) {
@@ -115,7 +106,6 @@ app.post("/reviews/:locationId", async (req, res) => {
         location: req.params.locationId, // assign the _id from the location
       },
       {
-        image: req.body.image,
         comment: req.body.comment,
         hauntedRating: req.body.hauntedRating,
         location: req.params.locationId, // assign the _id from the location
@@ -131,6 +121,18 @@ app.post("/reviews/:locationId", async (req, res) => {
   }
 });
 
+// delete route
+app.delete("/reviews/:locationId", async (req, res) => {
+  try {
+    res.json(
+      await Reviews.findOneAndDelete({
+        location: req.params.locationId, 
+      })
+    );
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 ///////////////////////////////
 // LISTENER
 ////////////////////////////////
