@@ -115,6 +115,7 @@ app.post("/reviews/:locationId", async (req, res) => {
         location: req.params.locationId, // assign the _id from the location
       },
       {
+        image: req.body.image,
         comment: req.body.comment,
         hauntedRating: req.body.hauntedRating,
         location: req.params.locationId, // assign the _id from the location
